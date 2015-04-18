@@ -24,6 +24,7 @@ object DBManager {
     }
   }
 
+  // check is user exist?
   private def isUserExist(user: User): Boolean = {
     val statement = "ren-ren_crawler.mapper.isUserExist"
     val exist = session.selectOne(statement, user).asInstanceOf[Int]
@@ -31,6 +32,7 @@ object DBManager {
     exist > 0
   }
 
+  // return all users
   def allUsers() = {
     val statement = "ren-ren_crawler.mapper.allUsers"
     import scala.collection.JavaConversions.asScalaBuffer
@@ -39,6 +41,14 @@ object DBManager {
     users
   }
 
+  // if has fetch, then set isFetch true
+  def changeUserIsFetch(user: User) = {
+    val statement = "ren-ren_crawler.mapper.changeUserIsFetch"
+    session.update(statement, user)
+    session.commit()
+  }
+
+  // save photo info to database
   def savePhoto(photo: Photo): Unit = {
     if(isPhotoExist(photo)) ()
     else {
@@ -48,6 +58,7 @@ object DBManager {
     }
   }
 
+  // check is photo exist
   private def isPhotoExist(photo: Photo): Boolean = {
     val statement = "ren-ren_crawler.mapper.isPhotoExist"
     val exist = session.selectOne(statement, photo).asInstanceOf[Int]
@@ -55,6 +66,7 @@ object DBManager {
     exist > 0
   }
 
+  // return all photo info
   def allPhotos() = {
     val statement = "ren-ren_crawler.mapper.allPhotos"
     import scala.collection.JavaConversions.asScalaBuffer
@@ -71,7 +83,14 @@ object DBManager {
     photos
   }
 
+  // if has fetch, then set isFetch true
+  def changePhotoIsFetch(photo: Photo) = {
+    val statement = "ren-ren_crawler.mapper.changePhotoIsFetch"
+    session.update(statement, photo)
+    session.commit()
+  }
+
   def main(args: Array[String]):Unit = {
-    println(photosByAge(15))
+    println(photosByAge(35).take(10))
   }
 }

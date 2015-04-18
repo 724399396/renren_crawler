@@ -6,15 +6,16 @@ import scala.util.Random
 /**
  * Created by li-wei on 2015/4/17.
  */
-object PhotoGetter extends App {
+object PhotoGetter {
   val rand = new Random()
   val tokens = CookieAndPostData.allTokens
 
-  DBManager.allUsers().foreach(x => {
-    getAvatarPhotoUrl(x.avatarAlbum).foreach(y => {
-      DBManager.savePhoto(new Photo(x.nickName, 2015 - x.birth, y.replaceAll("\\\\","")))
-    })
-  })
+//  DBManager.allUsers().foreach(x => {
+//    getAvatarPhotoUrl(x.avatarAlbum).foreach(y => {
+//      DBManager.savePhoto(new Photo(x.nickName, 2015 - x.birth, y.replaceAll("\\\\","")))
+//    })
+//    DBManager.changeUserIsFetch(x)
+//  })
 
   def getAvatarPhotoUrl(url: String):Iterator[String] = {
     val cookie = tokens(rand.nextInt(tokens.size))(0)

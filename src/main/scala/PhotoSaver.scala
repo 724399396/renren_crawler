@@ -1,29 +1,37 @@
 import java.io.{File, ByteArrayOutputStream, InputStream, FileOutputStream}
 import java.net.{HttpURLConnection, URL}
+import collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * Created by li-wei on 2015/4/17.
  */
-object PhotoSaver extends App {
-  var id = 0
-  for(age <- 15 to 35)
-    for(photo <- DBManager.photosByAge(age)) {
-      println(photo)
-      saveUrlImage(photo)
-      id += 1
-    }
+object PhotoSaver {
+  var map:mutable.Map[String,ArrayBuffer[Photo]] = mutable.Map()
+  for(age <- 10 to 35)
+    for(photo <- DBManager.photosByAge(age))
+      map(photo.nickName) = map.getOrElse(photo.nickName, ArrayBuffer[Photo]()) += photo
 
-  def saveUrlImage(photo: Photo) {
+
+
+  def saveUserImage(photos: ArrayBuffer[Photo]): Unit = {
+    for(i <- 0 until photos.length) {
+      saveUrlImage(photos(i), i + 1)
+      DBManager.changePhotoIsFetch(photos(i))
+    }
+  }
+
+  def saveUrlImage(photo: Photo, id: Int) {
     val imageDirectory = new File("photos/%s/%s".format(photo.age, photo.nickName.replaceAll("[^\\u4e00-\\u9fa5]+", "").trim))
     if (!imageDirectory.exists()) {
-      imageDirectory.mkdirs(); id = 1
+      imageDirectory.mkdirs();
     }
     val imageFile = new File("photos/%s/%s/%d.jpg".format(photo.age, photo.nickName.replaceAll("[^\\u4e00-\\u9fa5]+", "").trim, id))
     if(!imageFile.exists()) {
+      println(id + " : " + photo)
       val url: URL = new URL(photo.getAvatarUrl)
       val conn: HttpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setRequestMethod("GET");
-      conn.setConnectTimeout(5 * 1000);
       val inStream =
         try {
           conn.getInputStream()

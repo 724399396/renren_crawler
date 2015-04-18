@@ -1,5 +1,3 @@
-import org.jsoup.nodes.Document
-
 import scala.collection.mutable
 
 /**
@@ -8,9 +6,9 @@ import scala.collection.mutable
 object UserGetter extends App {
   import collection.mutable.Map
 
-  for(year <- 1980 to 2005)
+  for(year <- 1981 to 2005)
     for (token <- CookieAndPostData.allTokens)
-      getUserByBirth(year, 30, token(0), token(1)).foreach(DBManager.saveUser(_))
+      getUserByBirth(year, 490, token(0), token(1)).foreach(DBManager.saveUser(_))
 
   def getUserByBirth(birth: Int, limit: Int, cookie: Map[String, String], tempData: Map[String, String]): List[User] = {
     import java.net.URLEncoder._
