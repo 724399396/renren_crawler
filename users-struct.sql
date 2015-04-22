@@ -4,5 +4,8 @@ CREATE TABLE `users`(
 `id` int(8) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 `nickName` varchar(20) NOT NULL,
 `birth` INT(4) NOT NULL,
-`home` VARCHAR(50) NOT NULL
+`home` VARCHAR(100) NOT NULL,
+`albumHome` VARCHAR(100) NOT NULL,
+`avatarAlbum` VARCHAR(100) NOT NULL,
+`isFetch` BOOLEAN NOT NULL DEFAULT FALSE
 )

@@ -8,7 +8,7 @@ import scala.collection.mutable.ArrayBuffer
  */
 object Main extends App {
   val tokens = CookieAndPostData.allTokens
-  //getUser(1992 to 2005, 490)
+  //getUser(1980 to 2000, 0)
   //getPhoto()
   savePhoto()
 
@@ -31,7 +31,7 @@ object Main extends App {
         UserGetter.getUserByBirth(birth,limit,cookie,tempData).foreach( user => sender ! UserMessage(user))
       case UserCondition(user: User) =>
         PhotoGetter.getAvatarPhotoUrl(user.avatarAlbum).foreach(y => {
-          sender ! PhotoMessage(new Photo(user.nickName, 2015 - user.birth, y.replaceAll("\\\\","")))
+          sender ! PhotoMessage(new Photo(user.nickName, y._1 - user.birth, y._2.replaceAll("\\\\","")))
         })
         DBManager.changeUserIsFetch(user)
       case PhotoCondition(photos) =>

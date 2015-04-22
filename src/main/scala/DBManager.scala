@@ -91,6 +91,6 @@ object DBManager {
   }
 
   def main(args: Array[String]):Unit = {
-    println(photosByAge(35).take(10))
+    saveUser(new User("李为",1992,"","",""))
   }
 }
