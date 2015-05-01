@@ -17,3 +17,9 @@ libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.13"
 libraryDependencies += "com.typesafe.akka" % "akka-actor_2.10" % "2.3.9"
 
 libraryDependencies += "net.sourceforge.htmlunit" % "htmlunit" % "2.15"
+
+libraryDependencies ++= Seq("org.specs2" %% "specs2-core" % "3.5" % "test")
+
+resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+
+scalacOptions in Test ++= Seq("-Yrangepos")

@@ -6,29 +6,20 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * Created by li-wei on 2015/4/17.
  */
-object PhotoSaver {
-  var map:mutable.Map[String,ArrayBuffer[Photo]] = mutable.Map()
-  for(age <- 10 to 35)
-    for(photo <- DBManager.photosByAge(age))
-      map(photo.nickName) = map.getOrElse(photo.nickName, ArrayBuffer[Photo]()) += photo
-
-
-
-  def saveUserImage(photos: ArrayBuffer[Photo]): Unit = {
-    for(i <- 0 until photos.length) {
-      saveUrlImage(photos(i), i + 1)
-      DBManager.changePhotoIsFetch(photos(i))
+object PhotoSaver extends App {
+  for(age <- 0 to 6)
+    for(photo <- DBManager.photosByAge(age)) {
+      saveUrlImage(photo)
+      DBManager.changePhotoIsFetch(photo)
     }
-  }
 
-  def saveUrlImage(photo: Photo, id: Int) {
-    val imageDirectory = new File("photos/%s/%s".format(photo.age, photo.nickName.replaceAll("[^\\u4e00-\\u9fa5]+", "").trim))
+  def saveUrlImage(photo: Photo) {
+    val imageDirectory = new File("D:/work/photos-true/photos/%s/%s".format(photo.age, photo.nickName.replaceAll("[^\\u4e00-\\u9fa5]+", "").trim))
     if (!imageDirectory.exists()) {
       imageDirectory.mkdirs();
     }
-    val imageFile = new File("photos/%s/%s/%d.jpg".format(photo.age, photo.nickName.replaceAll("[^\\u4e00-\\u9fa5]+", "").trim, id))
+    val imageFile = new File("D:/work/photos-true/photos/%s/%s/%d.jpg".format(photo.age, photo.nickName.replaceAll("[^\\u4e00-\\u9fa5]+", "").trim, photo.id))
     if(!imageFile.exists()) {
-      println(id + " : " + photo)
       val url: URL = new URL(photo.getAvatarUrl)
       val conn: HttpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setRequestMethod("GET");
@@ -36,7 +27,7 @@ object PhotoSaver {
         try {
           conn.getInputStream()
         } catch {
-          case _: Exception => ()
+          case _: Exception => println(photo + " is failure")
         }
       if (inStream ==()) ()
       else {

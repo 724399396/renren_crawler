@@ -8,9 +8,9 @@ object UserGetter extends App {
 
   for(year <- 1981 to 2005)
     for (token <- CookieAndPostData.allTokens)
-      getUserByBirth(year, 490, token(0), token(1)).foreach(DBManager.saveUser(_))
+      getUserByBirth(year, 0, token(0), token(1), token(2).keys.head).foreach(x => {println(x);DBManager.fixWhere(x)})
 
-  def getUserByBirth(birth: Int, limit: Int, cookie: Map[String, String], tempData: Map[String, String]): List[User] = {
+  def getUserByBirth(birth: Int, limit: Int, cookie: Map[String, String], tempData: Map[String, String], where: String): List[User] = {
     import java.net.URLEncoder._
     0.to(limit, 10).flatMap {
       x => {
@@ -21,7 +21,7 @@ object UserGetter extends App {
         getUserIdFromPage(url, cookie, tempData)
       }
     }
-      .filter(x => x._4 != null).map(x => new User(x._1, birth, x._2, x._3, x._4)).toList
+      .filter(x => x._4 != null).map(x => new User(x._1, birth, where, x._2, x._3, x._4)).toList
   }
 
   def getUserIdFromPage(url: String, cookie: Map[String, String], data: Map[String, String]): mutable.Buffer[(String, String, String, String)] = {

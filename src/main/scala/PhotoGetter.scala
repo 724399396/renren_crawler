@@ -29,7 +29,7 @@ object PhotoGetter {
       val photoList = photoListPattern.findFirstIn(page).get
       val times = for (timePattern(_,time) <- timePattern.findAllIn(photoList)) yield time
       val urls = for (urlPattern(_, url) <- urlPattern.findAllIn(photoList)) yield url
-      times.map(t => { val cal = Calendar.getInstance(); cal.setTime(new Date(t.toLong)); cal.getWeekYear}) zip urls
+      times.map(t => { val cal = Calendar.getInstance(); cal.setTime(new Date(t.toLong)); cal.getWeekYear}).zipAll(urls,2015, "")
     } else {
       Iterator()
     }

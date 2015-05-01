@@ -12,23 +12,23 @@ import scala.io.Source
  */
 object Login extends App {
   val source = Source.fromFile(new File("id&pwd.properties"))
+  val out = new PrintWriter(new File("cookie&data.properties"))
   val cookies = source.getLines().map(line => {
     val np = line.split("----")
-    loginAndGetCookie(np(0), np(1))
+    write2File(loginAndGetCookie(np(0), np(1)), np(2))
   }).toArray
-  write2File("cookie&data.properties", cookies)
-  def write2File(fileName: String, cookies: Array[Array[String]]): Unit = {
-    val out = new PrintWriter(new File(fileName))
-    for(cookie <- cookies) {
+  out.close()
+
+  private def write2File(cookie: Array[String], where: String): Unit = {
       val data = getData(cookie.map(x => {
         val y = x.split("=");
         (y(0) -> y(1))
       }).toMap)
       out.print(cookie.mkString(","))
       out.print(";")
-      out.println(data.mkString(","))
-    }
-    out.close()
+      out.print(data.mkString(","))
+      out.print(";")
+      out.println(where)
   }
 
 
@@ -50,6 +50,7 @@ object Login extends App {
       !x.startsWith("domain") && !x.startsWith("path") && !x.startsWith("expires")
     }).filterNot(x => {(if(x.startsWith(" t")) {isRealT = !isRealT; isRealT} else false)})
   }
+
 
   def getData(cookie: Map[String,String]): Array[String] = {
     import org.jsoup.Jsoup

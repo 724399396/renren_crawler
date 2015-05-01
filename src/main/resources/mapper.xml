@@ -3,26 +3,26 @@
 <mapper namespace="ren-ren_crawler.mapper">
     <insert id="saveUser" parameterType="User">
         INSERT INTO users
-        VALUES(null,#{nickName},#{birth},#{home},#{albumHome},#{avatarAlbum},false)
+        VALUES(null,#{nickName},#{birth},#{whereFrom},#{home},#{albumHome},#{avatarAlbum},false)
     </insert>
 
     <select id="isUserExist" parameterType="User" resultType="Int">
         SELECT id FROM users
-        WHERE nickName = #{nickName}
+        WHERE home = #{home}
     </select>
 
     <select id="allUsers" resultType="User">
-        SELECT nickName,birth,avatarAlbum FROM users WHERE isFetch = FALSE
+        SELECT nickName,whereFrom,birth,avatarAlbum FROM users WHERE isFetch = FALSE
     </select>
 
     <update id="changeUserIsFetch" parameterType="User">
         UPDATE users SET isFetch = TRUE
-        WHERE nickName = #{nickName}
+        WHERE home = #{home}
     </update>
 
     <insert id="savePhoto" parameterType="Photo">
         INSERT INTO photos
-        VALUES(null,#{nickName},#{age},#{avatarUrl},false)
+        VALUES(null,#{nickName},#{age},#{whereFrom},#{avatarUrl},false)
     </insert>
     
     <select id="isPhotoExist" parameterType="Photo" resultType="Int">
@@ -30,17 +30,27 @@
         WHERE avatarUrl = #{avatarUrl}
     </select>
 
+    <update id="fixWhere" parameterType="User">
+        UPDATE users SET whereFrom = #{whereFrom}
+        WHERE nickName = #{nickName}
+    </update>
+
     <select id="allPhotos" resultType="Photo">
-        SELECT nickName,age,avatarUrl FROM photos WHERE isFetch = FALSE
+        SELECT id,nickName,age,avatarUrl FROM photos WHERE isFetch = FALSE
     </select>
 
     <select id="photosByAge" resultType="Photo">
-        SELECT nickName,age,avatarUrl FROM photos WHERE age = #{age} AND isFetch = FALSE
+        SELECT id,nickName,age,avatarUrl FROM photos WHERE age = #{age} AND isFetch = FALSE
     </select>
 
     <update id="changePhotoIsFetch" parameterType="Photo">
         UPDATE photos SET isFetch = TRUE
         WHERE avatarUrl = #{avatarUrl}
+    </update>
+
+    <update id="fixPhotoWhere" parameterType="User">
+        UPDATE photos SET whereFrom = #{whereFrom}
+        WHERE nickName = #{nickName}
     </update>
 
 </mapper>

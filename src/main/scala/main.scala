@@ -8,13 +8,13 @@ import scala.collection.mutable.ArrayBuffer
  */
 object Main extends App {
   val tokens = CookieAndPostData.allTokens
-  //getUser(1980 to 2000, 0)
+  //getUser(2002 to 2002, 490)
   //getPhoto()
   savePhoto()
 
   import collection.mutable.Map
   sealed class Message
-  case class QueryCondition(birth: Int, limit: Int, cookie: Map[String, String], tempData: Map[String, String]) extends Message
+  case class QueryCondition(birth: Int, limit: Int, cookie: Map[String, String], tempData: Map[String, String], where: String) extends Message
   case class UserMessage(user: User) extends Message
   case class BirthAndLimit(birthList: Range, limit: Int) extends Message
 
@@ -23,19 +23,21 @@ object Main extends App {
   case class PhotoMessage(photo: Photo) extends Message
 
   case class SavePhoto() extends Message
-  case class PhotoCondition(photos: ArrayBuffer[Photo]) extends Message
+  case class PhotoCondition(photo: Photo) extends Message
 
   class Crawler extends Actor {
     def receive() = {
-      case QueryCondition(birth,limit,cookie,tempData) =>
-        UserGetter.getUserByBirth(birth,limit,cookie,tempData).foreach( user => sender ! UserMessage(user))
+      case QueryCondition(birth,limit,cookie,tempData, where) =>
+        UserGetter.getUserByBirth(birth,limit,cookie,tempData, where).foreach( user => sender ! UserMessage(user))
       case UserCondition(user: User) =>
         PhotoGetter.getAvatarPhotoUrl(user.avatarAlbum).foreach(y => {
-          sender ! PhotoMessage(new Photo(user.nickName, y._1 - user.birth, y._2.replaceAll("\\\\","")))
+          sender ! PhotoMessage(new Photo(0,user.nickName, y._1 - user.birth, user.whereFrom, y._2.replaceAll("\\\\","")))
         })
         DBManager.changeUserIsFetch(user)
-      case PhotoCondition(photos) =>
-        PhotoSaver.saveUserImage(photos)
+      case PhotoCondition(photo) =>
+        PhotoSaver.saveUrlImage(photo)
+        println(photo)
+        DBManager.changePhotoIsFetch(photo)
     }
   }
 
@@ -43,14 +45,14 @@ object Main extends App {
     val worker = context.actorOf(Props[Crawler].withRouter(RoundRobinRouter(nrWorker)), "crawler")
     def receive() = {
       case BirthAndLimit(birthList, limit) => birthList.foreach(birth =>
-        tokens.foreach(token => worker ! QueryCondition(birth, limit, token(0), token(1)))
+        tokens.foreach(token => worker ! QueryCondition(birth, limit, token(0), token(1), token(2).keys.head))
       )
       case UserMessage(user) => DBManager.saveUser(user); println(user)
       case WillFetchUser() => DBManager.allUsers().foreach(user =>
         worker ! UserCondition(user)
       )
       case PhotoMessage(photo) => DBManager.savePhoto(photo); println(photo)
-      case SavePhoto() => PhotoSaver.map.foreach(token => worker ! PhotoCondition(token._2))
+      case SavePhoto() => (20 to 20).flatMap(DBManager.photosByAge _).foreach(photo => worker ! PhotoCondition(photo))
     }
   }
 

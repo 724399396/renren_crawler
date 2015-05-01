@@ -90,7 +90,19 @@ object DBManager {
     session.commit()
   }
 
+  def fixWhere(user: User): Unit = {
+    val statement = "ren-ren_crawler.mapper.fixWhere"
+    session.update(statement, user)
+    session.commit()
+  }
+
+  def fixPhotoWhere(user: User) = {
+    val statement = "ren-ren_crawler.mapper.fixPhotoWhere"
+    session.update(statement, user)
+    session.commit()
+  }
+
   def main(args: Array[String]):Unit = {
-    saveUser(new User("李为",1992,"","",""))
+    photosByAge(6).foreach(println _)
   }
 }
