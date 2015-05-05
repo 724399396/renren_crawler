@@ -8,9 +8,9 @@ import scala.collection.mutable.ArrayBuffer
  */
 object Main extends App {
   val tokens = CookieAndPostData.allTokens
-  //getUser(2002 to 2002, 490)
-  //getPhoto()
-  savePhoto()
+  //getUser(1975 to 2002, 490)
+  getPhoto()
+  //savePhoto(6,40)
 
   import collection.mutable.Map
   sealed class Message
@@ -21,8 +21,9 @@ object Main extends App {
   case class WillFetchUser() extends Message
   case class UserCondition(user: User) extends Message
   case class PhotoMessage(photo: Photo) extends Message
+  case class UserFinish(user: User) extends Message
 
-  case class SavePhoto() extends Message
+  case class SavePhoto(start: Int, end: Int) extends Message
   case class PhotoCondition(photo: Photo) extends Message
 
   class Crawler extends Actor {
@@ -33,7 +34,7 @@ object Main extends App {
         PhotoGetter.getAvatarPhotoUrl(user.avatarAlbum).foreach(y => {
           sender ! PhotoMessage(new Photo(0,user.nickName, y._1 - user.birth, user.whereFrom, y._2.replaceAll("\\\\","")))
         })
-        DBManager.changeUserIsFetch(user)
+        sender ! UserFinish(user)
       case PhotoCondition(photo) =>
         PhotoSaver.saveUrlImage(photo)
         println(photo)
@@ -48,11 +49,14 @@ object Main extends App {
         tokens.foreach(token => worker ! QueryCondition(birth, limit, token(0), token(1), token(2).keys.head))
       )
       case UserMessage(user) => DBManager.saveUser(user); println(user)
+
       case WillFetchUser() => DBManager.allUsers().foreach(user =>
         worker ! UserCondition(user)
       )
       case PhotoMessage(photo) => DBManager.savePhoto(photo); println(photo)
-      case SavePhoto() => (20 to 20).flatMap(DBManager.photosByAge _).foreach(photo => worker ! PhotoCondition(photo))
+      case UserFinish(user) => DBManager.changeUserIsFetch(user)
+
+      case SavePhoto(start, end) => (start to end).flatMap(DBManager.photosByAge _).foreach(photo => worker ! PhotoCondition(photo))
     }
   }
 
@@ -64,13 +68,13 @@ object Main extends App {
 
   def getPhoto() = {
     val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(8)), name="master")
+    val master = system.actorOf(Props(new Master(10)), name="master")
     master ! WillFetchUser()
   }
 
-  def savePhoto() = {
+  def savePhoto(start: Int, end: Int) = {
     val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(30)), name="master")
-    master ! SavePhoto()
+    val master = system.actorOf(Props(new Master(80)), name="master")
+    master ! SavePhoto(start, end)
   }
 }

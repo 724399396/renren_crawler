@@ -103,6 +103,6 @@ object DBManager {
   }
 
   def main(args: Array[String]):Unit = {
-    photosByAge(6).foreach(println _)
+    changeUserIsFetch(new User("程文化", 2001, "南京大学", null, null, "http://photo.renren.com/photo/407349737/album-500143900/v7"))
   }
 }

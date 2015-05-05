@@ -17,7 +17,7 @@
 
     <update id="changeUserIsFetch" parameterType="User">
         UPDATE users SET isFetch = TRUE
-        WHERE home = #{home}
+        WHERE avatarAlbum = #{avatarAlbum}
     </update>
 
     <insert id="savePhoto" parameterType="Photo">
