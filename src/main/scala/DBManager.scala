@@ -12,97 +12,130 @@ object DBManager {
   val reader = Resources.getResourceAsReader(resource)
   val sessionFactory: SqlSessionFactory =
     new SqlSessionFactoryBuilder().build(reader)
-  val session: SqlSession = sessionFactory.openSession()
+
 
   // save ren-ren user
   def saveUser(user: User): Unit = {
     if(isUserExist(user)) ()
     else {
-      val statement = "ren-ren_crawler.mapper.saveUser"
-      session.insert(statement, user)
-      session.commit()
+      val session: SqlSession = sessionFactory.openSession()
+      try {
+        val statement = "ren-ren_crawler.mapper.saveUser"
+        session.insert(statement, user)
+        session.commit()
+      } finally {
+        session.close()
+      }
     }
   }
 
   // check is user exist?
   private def isUserExist(user: User): Boolean = {
-    val statement = "ren-ren_crawler.mapper.isUserExist"
-    val exist = session.selectOne(statement, user).asInstanceOf[Int]
-    session.commit()
-    exist > 0
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.isUserExist"
+      val exist = session.selectOne(statement, user).asInstanceOf[Int]
+      session.commit()
+      exist > 0
+    } finally {
+      session.close()
+    }
   }
 
   // return all users
   def allUsers() = {
-    val statement = "ren-ren_crawler.mapper.allUsers"
-    import scala.collection.JavaConversions.asScalaBuffer
-    val users: mutable.Buffer[User] = session.selectList(statement).asInstanceOf[java.util.ArrayList[User]]
-    session.commit()
-    users
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.allUsers"
+      import scala.collection.JavaConversions.asScalaBuffer
+      val users: mutable.Buffer[User] = session.selectList(statement).asInstanceOf[java.util.ArrayList[User]]
+      session.commit()
+      users
+    } finally {
+      session.close()
+    }
   }
 
   // if has fetch, then set isFetch true
   def changeUserIsFetch(user: User) = {
-    val statement = "ren-ren_crawler.mapper.changeUserIsFetch"
-    session.update(statement, user)
-    session.commit()
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.changeUserIsFetch"
+      session.update(statement, user)
+      session.commit()
+    } finally {
+      session.close()
+    }
   }
 
   // save photo info to database
   def savePhoto(photo: Photo): Unit = {
     if(isPhotoExist(photo)) ()
     else {
-      val statement = "ren-ren_crawler.mapper.savePhoto"
-      session.insert(statement, photo)
-      session.commit()
+      val session: SqlSession = sessionFactory.openSession()
+      try {
+        val statement = "ren-ren_crawler.mapper.savePhoto"
+        session.insert(statement, photo)
+        session.commit()
+      } finally {
+        session.close()
+      }
     }
   }
 
   // check is photo exist
   private def isPhotoExist(photo: Photo): Boolean = {
-    val statement = "ren-ren_crawler.mapper.isPhotoExist"
-    val exist = session.selectOne(statement, photo).asInstanceOf[Int]
-    session.commit()
-    exist > 0
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.isPhotoExist"
+      val exist = session.selectOne(statement, photo).asInstanceOf[Int]
+      session.commit()
+      exist > 0
+    } finally {
+      session.close()
+    }
   }
 
   // return all photo info
   def allPhotos() = {
-    val statement = "ren-ren_crawler.mapper.allPhotos"
-    import scala.collection.JavaConversions.asScalaBuffer
-    val photos: mutable.Buffer[Photo] = session.selectList(statement).asInstanceOf[java.util.ArrayList[Photo]]
-    session.commit()
-    photos
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.allPhotos"
+      import scala.collection.JavaConversions.asScalaBuffer
+      val photos: mutable.Buffer[Photo] = session.selectList(statement).asInstanceOf[java.util.ArrayList[Photo]]
+      session.commit()
+      photos
+    } finally {
+      session.close()
+    }
   }
 
   def photosByAge(age: Int) = {
-    val statement = "ren-ren_crawler.mapper.photosByAge"
-    import scala.collection.JavaConversions.asScalaBuffer
-    val photos: mutable.Buffer[Photo] = session.selectList(statement,age).asInstanceOf[java.util.ArrayList[Photo]]
-    session.commit()
-    photos
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.photosByAge"
+      import scala.collection.JavaConversions.asScalaBuffer
+      val photos: mutable.Buffer[Photo] = session.selectList(statement,age).asInstanceOf[java.util.ArrayList[Photo]]
+      session.commit()
+      photos
+    } finally {
+      session.close()
+    }
   }
 
   // if has fetch, then set isFetch true
   def changePhotoIsFetch(photo: Photo) = {
-    val statement = "ren-ren_crawler.mapper.changePhotoIsFetch"
-    session.update(statement, photo)
-    session.commit()
-  }
-
-  def fixWhere(user: User): Unit = {
-    val statement = "ren-ren_crawler.mapper.fixWhere"
-    session.update(statement, user)
-    session.commit()
-  }
-
-  def fixPhotoWhere(user: User) = {
-    val statement = "ren-ren_crawler.mapper.fixPhotoWhere"
-    session.update(statement, user)
-    session.commit()
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.changePhotoIsFetch"
+      session.update(statement, photo)
+      session.commit()
+    } finally {
+      session.close()
+    }
   }
 
   def main(args: Array[String]):Unit = {
-    changeUserIsFetch(new User("程文化", 2001, "南京大学", null, null, "http://photo.renren.com/photo/407349737/album-500143900/v7"))
+    allUsers().take(10).foreach(println _)
   }
 }

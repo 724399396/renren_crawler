@@ -12,12 +12,12 @@
     </select>
 
     <select id="allUsers" resultType="User">
-        SELECT nickName,whereFrom,birth,avatarAlbum FROM users WHERE isFetch = FALSE
+        SELECT id,nickName,whereFrom,birth,avatarAlbum FROM users WHERE isFetch = FALSE
     </select>
 
     <update id="changeUserIsFetch" parameterType="User">
         UPDATE users SET isFetch = TRUE
-        WHERE avatarAlbum = #{avatarAlbum}
+        WHERE id = #{id}
     </update>
 
     <insert id="savePhoto" parameterType="Photo">
@@ -30,11 +30,6 @@
         WHERE avatarUrl = #{avatarUrl}
     </select>
 
-    <update id="fixWhere" parameterType="User">
-        UPDATE users SET whereFrom = #{whereFrom}
-        WHERE nickName = #{nickName}
-    </update>
-
     <select id="allPhotos" resultType="Photo">
         SELECT id,nickName,age,avatarUrl FROM photos WHERE isFetch = FALSE
     </select>
@@ -45,12 +40,7 @@
 
     <update id="changePhotoIsFetch" parameterType="Photo">
         UPDATE photos SET isFetch = TRUE
-        WHERE avatarUrl = #{avatarUrl}
-    </update>
-
-    <update id="fixPhotoWhere" parameterType="User">
-        UPDATE photos SET whereFrom = #{whereFrom}
-        WHERE nickName = #{nickName}
+        WHERE id = #{id}
     </update>
 
 </mapper>

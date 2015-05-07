@@ -1,4 +1,4 @@
-import java.io.{File, ByteArrayOutputStream, InputStream, FileOutputStream}
+import java.io._
 import java.net.{HttpURLConnection, URL}
 import collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -7,20 +7,40 @@ import scala.collection.mutable.ArrayBuffer
  * Created by li-wei on 2015/4/17.
  */
 object PhotoSaver extends App {
-  for (age <- 0 to 7)
-    for (photo <- DBManager.photosByAge(age)) {
-      saveUrlImage(photo)
+  for (age <- 39 to 40)
+    for (photo <- DBManager.photosByAge(age).take(1)) {
+      easySaveUrlImage(photo)
       DBManager.changePhotoIsFetch(photo)
     }
 
-  def saveUrlImage(photo: Photo) {
-    val personName: String = photo.nickName.replaceAll("[^\\u4e00-\\u9fa5]+", "").trim match {
-      case "" => "全英文名或其他"
-      case name: String => name
+  def easySaveUrlImage(photo: Photo): Unit = {
+    val imageDirectory = new File("D:/work/photos-true/photos/%s".format(photo.age))
+    if (!imageDirectory.exists())
+      imageDirectory.mkdirs()
+    try {
+      val url = new URL(photo.avatarUrl)
+      val is = new BufferedInputStream(url.openStream())
+      val os = new FileOutputStream("D:/work/photos-true/photos/%s/%d.jpg".format(photo.age, photo.id))
+      val b = new Array[Byte](1024)
+      var length = -1
+      while ( {length = is.read(b); length != -1 }) {
+        os.write(b, 0, length)
+      }
+      is.close()
+      os.close()
+    } catch {
+      case _: Exception => println(photo + " is failure")
     }
+  }
+
+  def saveUrlImage(photo: Photo) {
+//    val personName: String = photo.nickName.replaceAll("[^\\u4e00-\\u9fa5]+", "").trim match {
+//      case "" => "全英文名或其他"
+//      case name: String => name
+//    }
     val imageDirectory = new File("D:/work/photos-true/photos/%s".format(photo.age))
     if (!imageDirectory.exists()) {
-      imageDirectory.mkdirs();
+      imageDirectory.mkdirs()
     }
     val imageFile = new File("D:/work/photos-true/photos/%s/%d.jpg".format(photo.age, photo.id))
     if (!imageFile.exists()) {
