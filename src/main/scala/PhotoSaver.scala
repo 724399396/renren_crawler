@@ -8,7 +8,7 @@ import scala.collection.mutable.ArrayBuffer
  */
 object PhotoSaver extends App {
   for (age <- 39 to 40)
-    for (photo <- DBManager.photosByAge(age).take(1)) {
+    for (photo <- DBManager.notSavePhotosByAge(age).take(1)) {
       easySaveUrlImage(photo)
       DBManager.changePhotoIsFetch(photo)
     }

@@ -30,11 +30,15 @@
         WHERE avatarUrl = #{avatarUrl}
     </select>
 
-    <select id="allPhotos" resultType="Photo">
+    <select id="allNotSavePhotos" resultType="Photo">
         SELECT id,nickName,age,avatarUrl FROM photos WHERE isFetch = FALSE
     </select>
 
-    <select id="photosByAge" resultType="Photo">
+    <select id="getPhotoById" parameterType="Int" resultType="Photo">
+        SELECT id,age,whereFrom FROM photos WHERE id=#{id}
+    </select>
+
+    <select id="notSavePhotosByAge" resultType="Photo">
         SELECT id,nickName,age,avatarUrl FROM photos WHERE age = #{age} AND isFetch = FALSE
     </select>
 

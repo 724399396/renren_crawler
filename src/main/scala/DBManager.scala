@@ -97,10 +97,10 @@ object DBManager {
   }
 
   // return all photo info
-  def allPhotos() = {
+  def allNotSavePhotos() = {
     val session: SqlSession = sessionFactory.openSession()
     try {
-      val statement = "ren-ren_crawler.mapper.allPhotos"
+      val statement = "ren-ren_crawler.mapper.allNotSavePhotos"
       import scala.collection.JavaConversions.asScalaBuffer
       val photos: mutable.Buffer[Photo] = session.selectList(statement).asInstanceOf[java.util.ArrayList[Photo]]
       session.commit()
@@ -110,10 +110,10 @@ object DBManager {
     }
   }
 
-  def photosByAge(age: Int) = {
+  def notSavePhotosByAge(age: Int) = {
     val session: SqlSession = sessionFactory.openSession()
     try {
-      val statement = "ren-ren_crawler.mapper.photosByAge"
+      val statement = "ren-ren_crawler.mapper.notSavePhotosByAge"
       import scala.collection.JavaConversions.asScalaBuffer
       val photos: mutable.Buffer[Photo] = session.selectList(statement,age).asInstanceOf[java.util.ArrayList[Photo]]
       session.commit()
@@ -123,6 +123,18 @@ object DBManager {
     }
   }
 
+  def getPhotoById(id: Int): Photo = {
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.getPhotoById"
+      val photo: Photo = session.selectOne[Photo](statement, id)
+      session.commit()
+      photo
+    } finally {
+      session.close
+    }
+  }
+  
   // if has fetch, then set isFetch true
   def changePhotoIsFetch(photo: Photo) = {
     val session: SqlSession = sessionFactory.openSession()
@@ -136,6 +148,6 @@ object DBManager {
   }
 
   def main(args: Array[String]):Unit = {
-    allUsers().take(10).foreach(println _)
+    println(getPhotoById(1))
   }
 }

@@ -62,7 +62,7 @@ object PhotoDropDu {
 
 
 
-  private def jpgIndex2Number(photo: String): Int = {
+  def jpgIndex2Number(photo: String): Int = {
     val full = new File(photo).getName
     full.substring(0, full.lastIndexOf(".jpg")).toInt
   }

@@ -7,8 +7,8 @@ import akka.routing.{RoundRobinRouter,SmallestMailboxRouter}
 object Main extends App {
   val tokens = CookieAndPostData.allTokens
   //getUser(1975 to 2002, 490)
-  getPhoto()
-  //savePhoto(6,40)
+  //getPhoto()
+  savePhoto(6,40)
 
   import collection.mutable.Map
   sealed class Message
@@ -59,7 +59,7 @@ object Main extends App {
       case PhotoMessage(photo) => println(photo)
       case UserFinish(user) => println(user.nickName + " is Finish")
 
-      case SavePhoto(start, end) => (start to end).flatMap(DBManager.photosByAge _).foreach(photo => worker ! PhotoCondition(photo))
+      case SavePhoto(start, end) => (start to end).flatMap(DBManager.notSavePhotosByAge _).foreach(photo => worker ! PhotoCondition(photo))
       case PhotoFinish(photo) => println(photo)
     }
   }

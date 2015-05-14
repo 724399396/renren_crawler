@@ -7,7 +7,7 @@ import org.opencv.highgui.Highgui
 import org.opencv.objdetect.CascadeClassifier
 
 /**
- * vm args: -Djava.library.path=F:/opencv/build/java/x64;F:/opencv/build/x64/vc12/bin -Xmx1000M
+ * vm args: -Djava.library.path=F:/opencv/build/java/x64;F:/opencv/build/x64/vc12/bin -Xms100M -Xmx300M -XX:MaxPermSize=50M -XX:MaxDirectMemorySize=50M
  */
 object FaceDetect {
   System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
@@ -18,8 +18,8 @@ object FaceDetect {
 
   def main(args: Array[String]):Unit = {
     val t = System.currentTimeMillis()
-    (21 to 40).flatMap(age => Util.subFiles(new File("D:/work/photos-true/photos/%d".format(age)))).map(_.getAbsolutePath)
-      .filter(_.endsWith("jpg")).foreach(detectFaceAndWrite _)
+    (27 to 40).flatMap(age => Util.subFiles(new File("D:/work/photos-true/photos/%d".format(age)))).map(_.getAbsolutePath)
+      .filter(_.endsWith("jpg"))foreach(detectFaceAndWrite _)
     println("time: " + (System.currentTimeMillis - t) + "ms")
     //detectFaceAndWrite("D:\\work\\photos\\photos-face\\20\\陈冰\\4.jpg")
   }
@@ -27,6 +27,7 @@ object FaceDetect {
   def detectFaceAndWrite(source: String): Unit = {
     try {
       println(source)
+      var gcCount = 0
       val sourceFile = new File(source)
       val image: Mat = Highgui.imread(source)
       val faceDetections: MatOfRect = new MatOfRect()
@@ -48,10 +49,11 @@ object FaceDetect {
         val removeFile = new File("D:/work/photos-true/non-faces/%s/%s".format(sourceFile.getParentFile.getName,
           sourceFile.getName))
         if (!removeFile.getParentFile.exists()) removeFile.getParentFile.mkdirs()
-        Highgui.imwrite(removeFile.getAbsolutePath,image)
+        Util.copyFile(source, removeFile.getAbsolutePath)
       }
       image.release()
       faceDetections.release()
+      System.gc
     } catch {
       case _: AnyRef =>
         println("error: " + source )
