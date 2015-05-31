@@ -21,10 +21,10 @@ object UserGetter extends App {
         getUserIdFromPage(url, cookie, tempData)
       }
     }
-      .filter(x => x._4 != null).map(x => new User(0,x._1, birth, where, x._2, x._3, x._4)).toList
+      .filter(x => x._4 != null).map(x => new User(0,x._1, birth, where, x._2, x._3, x._4, x._5)).toList
   }
 
-  def getUserIdFromPage(url: String, cookie: Map[String, String], data: Map[String, String]): mutable.Buffer[(String, String, String, String)] = {
+  def getUserIdFromPage(url: String, cookie: Map[String, String], data: Map[String, String]): mutable.Buffer[(String, String, String, String, Long)] = {
     import collection.JavaConversions._
     HtmlGetter.getHtmlByPost(url, cookie, data).
       select("ol#active_2012_module.fl.search_log").select("div.info").select("strong").map(
@@ -34,7 +34,7 @@ object UserGetter extends App {
           val album = "http://photo.renren.com/photo/%s/albumlist/v7#".format(id)
           val avatarId = getAvatarIdByParse(album,cookie)
           val avatar = if(avatarId.isEmpty) null else "http://photo.renren.com/photo/%s/album-%s/v7".format(id,avatarId.get)
-          (x.text, "http://www.renren.com/%s/profile".format(id), album, avatar)
+          (x.text, "http://www.renren.com/%s/profile".format(id), album, avatar, id.toLong)
         })
   }
 

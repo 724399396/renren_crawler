@@ -5,5 +5,6 @@ CREATE TABLE `photos`(
 `nickName` varchar(20) NOT NULL,
 `age` int(3) NOT NULL,
 `avatarUrl` VARCHAR(100) NOT NULL,
+`hashId` Int(16) NOT NULL,
 `isFetch` BOOLEAN NOT NULL DEFAULT FALSE
 )

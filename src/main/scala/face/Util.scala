@@ -34,10 +34,14 @@ object Util {
   }
 
   def subFiles(dir: File) : Iterator[File] = {
-    val all = dir.listFiles()
-    val files = all.filter(_.isFile)
-    val dirs = all.filter(_.isDirectory)
-    files.toIterator ++ dirs.toIterator.flatMap(subFiles _)
+    if (dir.exists()) {
+      val all = dir.listFiles()
+      val files = all.filter(_.isFile)
+      val dirs = all.filter(_.isDirectory)
+      files.toIterator ++ dirs.toIterator.flatMap(subFiles _)
+    } else {
+      Iterator()
+    }
   }
 
   def convertReal2Tmp(source: File): String = {

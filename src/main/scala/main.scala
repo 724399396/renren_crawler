@@ -6,9 +6,11 @@ import akka.routing.{RoundRobinRouter,SmallestMailboxRouter}
  */
 object Main extends App {
   val tokens = CookieAndPostData.allTokens
-  //getUser(1975 to 2002, 490)
-  //getPhoto()
-  savePhoto(6,40)
+  //getUser(1973 to 2000, 490)
+  //getUser(1985 to 2000, 490)
+  //getUser(1999 to 2000, 490)
+  //getPhoto(1973, 1975)
+  savePhoto(38,40)
 
   import collection.mutable.Map
   sealed class Message
@@ -16,7 +18,7 @@ object Main extends App {
   case class UserMessage(user: User) extends Message
   case class BirthAndLimit(birthList: Range, limit: Int) extends Message
 
-  case class WillFetchUser() extends Message
+  case class WillFetchUser(startBirth:Int, endBirth: Int) extends Message
   case class UserCondition(user: User) extends Message
   case class PhotoMessage(photo: Photo) extends Message
   case class UserFinish(user: User) extends Message
@@ -32,9 +34,11 @@ object Main extends App {
         { user => DBManager.saveUser(user);sender ! UserMessage(user) })
       case UserCondition(user: User) =>
         PhotoGetter.getAvatarPhotoUrl(user.avatarAlbum).foreach(y => {
-          val photo = new Photo(0,user.nickName, y._1 - user.birth, user.whereFrom, y._2.replaceAll("\\\\",""))
-          DBManager.savePhoto(photo)
-          sender ! PhotoMessage(photo)
+          val photo = new Photo(0,user.nickName, y._1 - user.birth, user.whereFrom, y._2.replaceAll("\\\\",""), y._2.replaceAll("\\\\","").hashCode)
+          if (photo.getAvatarUrl.trim != null) {
+            DBManager.savePhoto(photo)
+            sender ! PhotoMessage(photo)
+          }
         })
         DBManager.changeUserIsFetch(user)
         sender ! UserFinish(user)
@@ -53,13 +57,15 @@ object Main extends App {
       )
       case UserMessage(user) => println(user)
 
-      case WillFetchUser() => DBManager.allUsers().foreach(user =>
-        worker ! UserCondition(user)
+      case WillFetchUser(startBirth, endBirth) => (startBirth to endBirth).flatMap(DBManager.notFetchUsersByBirth)
+        .foreach(user => worker ! UserCondition(user)
       )
       case PhotoMessage(photo) => println(photo)
       case UserFinish(user) => println(user.nickName + " is Finish")
 
-      case SavePhoto(start, end) => (start to end).flatMap(DBManager.notSavePhotosByAge _).foreach(photo => worker ! PhotoCondition(photo))
+      case SavePhoto(start, end) => (start to end).flatMap(age =>
+        DBManager.notSavePhotosByAge(age).take(10000-DBManager.hasSavedPhotoNumByAge(age)))
+        .foreach(photo => worker ! PhotoCondition(photo))
       case PhotoFinish(photo) => println(photo)
     }
   }
@@ -70,15 +76,15 @@ object Main extends App {
     master ! BirthAndLimit(birthList, limit)
   }
 
-  def getPhoto() = {
+  def getPhoto(startBirth: Int, endBirth: Int) = {
     val system = ActorSystem("ren-ren-actor")
     val master = system.actorOf(Props(new Master(10)), name="master")
-    master ! WillFetchUser()
+    master ! WillFetchUser(startBirth, endBirth)
   }
 
   def savePhoto(start: Int, end: Int) = {
     val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(10)), name="master")
+    val master = system.actorOf(Props(new Master(50)), name="master")
     master ! SavePhoto(start, end)
   }
 }

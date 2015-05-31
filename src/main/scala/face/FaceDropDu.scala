@@ -11,7 +11,7 @@ import org.opencv.imgproc.Imgproc
  */
 object FaceDropDu {
   def main(args: Array[String]): Unit = {
-    (6 to 40).foreach(age => deleteRepeatPhoto("D:/work/photos-true/faces/%d".format(age)))
+    (31 to 40).foreach(age => deleteRepeatPhoto("D:/work/photos-true/faces/%d".format(age)))
   }
 
   private def deleteRepeatPhoto(source: String) {

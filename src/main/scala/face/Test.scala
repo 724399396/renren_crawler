@@ -10,9 +10,18 @@ import org.opencv.imgproc.Imgproc
  */
 object Test extends App {
   System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
-  val hash = pHash("D:\\work\\photos-true\\faces\\20\\100047-0.jpg")
-  val hash2 = pHash("D:\\work\\photos-true\\faces\\20\\100047-1.jpg")
-  println(hash.zip(hash2).map({ case (x, y) => if (x != y) 1 else 0 }).sum)
+  val img1 = Highgui.imread("1.jpg")
+  val img2 = Highgui.imread("D:\\work\\photos-true\\other\\Images_ori\\009055_0M54.JPG")
+  println(img1.dump().takeRight(1000))
+  println(img2.dump().takeRight(1000))
+  println(img1.dump().length)
+  println(img2.dump().length)
+  println(img1.copyTo(img2))
+  println(img2.dump.length)
+  println(img1.dump.length)
+//  val hash = pHash("D:\\work\\photos-true\\faces\\20\\100047-0.jpg")
+//  val hash2 = pHash("D:\\work\\photos-true\\faces\\20\\100047-1.jpg")
+//  println(hash.zip(hash2).map({ case (x, y) => if (x != y) 1 else 0 }).sum)
   private def pHash(photo: String): IndexedSeq[Int] = {
     val size = 32
     val mainPhoto = photo //117200 109436 939

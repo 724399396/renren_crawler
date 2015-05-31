@@ -3,16 +3,20 @@
 <mapper namespace="ren-ren_crawler.mapper">
     <insert id="saveUser" parameterType="User">
         INSERT INTO users
-        VALUES(null,#{nickName},#{birth},#{whereFrom},#{home},#{albumHome},#{avatarAlbum},false)
+        VALUES(null,#{nickName},#{birth},#{whereFrom},#{home},#{albumHome},#{avatarAlbum},#{uid},false)
     </insert>
 
     <select id="isUserExist" parameterType="User" resultType="Int">
         SELECT id FROM users
-        WHERE home = #{home}
+        WHERE uid = #{uid}
     </select>
 
-    <select id="allUsers" resultType="User">
+    <select id="allNotFetchUsers" resultType="User">
         SELECT id,nickName,whereFrom,birth,avatarAlbum FROM users WHERE isFetch = FALSE
+    </select>
+
+    <select id="notFetchUsersByBirth" parameterType="Int" resultType="User">
+        SELECT id,nickName,whereFrom,birth,avatarAlbum FROM users WHERE isFetch = FALSE AND birth=#{birth}
     </select>
 
     <update id="changeUserIsFetch" parameterType="User">
@@ -22,12 +26,12 @@
 
     <insert id="savePhoto" parameterType="Photo">
         INSERT INTO photos
-        VALUES(null,#{nickName},#{age},#{whereFrom},#{avatarUrl},false)
+        VALUES(null,#{nickName},#{age},#{whereFrom},#{avatarUrl},#{hashId},false)
     </insert>
     
-    <select id="isPhotoExist" parameterType="Photo" resultType="Int">
-        SELECT id FROM photos
-        WHERE avatarUrl = #{avatarUrl}
+    <select id="isPhotoExist" parameterType="Photo" resultType="String">
+        SELECT avatarUrl FROM photos
+        WHERE hashId = #{hashId}
     </select>
 
     <select id="allNotSavePhotos" resultType="Photo">
@@ -40,6 +44,10 @@
 
     <select id="notSavePhotosByAge" resultType="Photo">
         SELECT id,nickName,age,avatarUrl FROM photos WHERE age = #{age} AND isFetch = FALSE
+    </select>
+
+    <select id="hasSavedPhotoNumByAge" parameterType="Int" resultType="Int">
+        SELECT Count(id) FROM photos WHERE age = #{age} AND isFetch = TRUE
     </select>
 
     <update id="changePhotoIsFetch" parameterType="Photo">

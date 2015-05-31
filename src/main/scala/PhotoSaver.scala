@@ -7,11 +7,13 @@ import scala.collection.mutable.ArrayBuffer
  * Created by li-wei on 2015/4/17.
  */
 object PhotoSaver extends App {
-  for (age <- 39 to 40)
-    for (photo <- DBManager.notSavePhotosByAge(age).take(1)) {
-      easySaveUrlImage(photo)
-      DBManager.changePhotoIsFetch(photo)
+  val start = System.currentTimeMillis()
+  for (age <- 16 to 16)
+    for (photo <- DBManager.notSavePhotosByAge(age).take(10)) {
+      saveUrlImage(photo) //78801 83338 89453
+      //DBManager.changePhotoIsFetch(photo)
     }
+  println(System.currentTimeMillis() - start)
 
   def easySaveUrlImage(photo: Photo): Unit = {
     val imageDirectory = new File("D:/work/photos-true/photos/%s".format(photo.age))
@@ -51,7 +53,7 @@ object PhotoSaver extends App {
         val inStream = conn.getInputStream()
         if (inStream ==()) ()
         else {
-          val data: Array[Byte] = readInputStream(inStream.asInstanceOf[InputStream])
+          val data: Array[Byte] = readInputStream(new BufferedInputStream(inStream.asInstanceOf[InputStream]))
           val outStream = new FileOutputStream(imageFile)
           outStream.write(data)
           outStream.close()
@@ -62,7 +64,7 @@ object PhotoSaver extends App {
     }
   }
 
-  def readInputStream(inStream: InputStream): Array[Byte] = {
+  def readInputStream(inStream: BufferedInputStream): Array[Byte] = {
     val outStream = new ByteArrayOutputStream()
     val buffer = new Array[Byte](1024)
     var len = 0
