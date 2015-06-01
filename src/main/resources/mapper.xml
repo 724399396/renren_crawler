@@ -3,7 +3,7 @@
 <mapper namespace="ren-ren_crawler.mapper">
     <insert id="saveUser" parameterType="User">
         INSERT INTO users
-        VALUES(null,#{nickName},#{birth},#{whereFrom},#{home},#{albumHome},#{avatarAlbum},#{uid},false)
+        VALUES(null,#{nickName},#{birth},#{whereFrom},#{entryYear},#{home},#{albumHome},#{avatarAlbum},#{uid},false)
     </insert>
 
     <select id="isUserExist" parameterType="User" resultType="Int">
@@ -21,6 +21,15 @@
 
     <update id="changeUserIsFetch" parameterType="User">
         UPDATE users SET isFetch = TRUE
+        WHERE id = #{id}
+    </update>
+
+    <select id="allNotHaveEntryYearUsers" resultType="User">
+        SELECT id,nickName,birth,uid FROM users where entryYear = 0
+    </select>
+
+    <update id="fixUserEntryYear" parameterType="User">
+        UPDATE users SET entryYear=#{entryYear}
         WHERE id = #{id}
     </update>
 

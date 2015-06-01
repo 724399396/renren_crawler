@@ -75,6 +75,30 @@ object DBManager {
     }
   }
 
+  def allNotHaveEntryYearUsers() = {
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.allNotHaveEntryYearUsers"
+      import scala.collection.JavaConversions.asScalaBuffer
+      val users: mutable.Buffer[User] = session.selectList[User](statement)
+      session.commit()
+      users
+    } finally {
+      session.close()
+    }
+  }
+
+  def fixUserEntryYear(user: User): Unit = {
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.fixUserEntryYear"
+      session.update(statement, user)
+      session.commit()
+    } finally {
+      session.close()
+    }
+  }
+
   // save photo info to database
   def savePhoto(photo: Photo): Unit = {
     val session: SqlSession = sessionFactory.openSession()
@@ -163,6 +187,11 @@ object DBManager {
   }
 
   def main(args: Array[String]):Unit = {
-    println(hasSavedPhotoNumByAge(32))
+    fixUserEntryYear {
+      val old = allNotHaveEntryYearUsers()(2)
+      println(old)
+      val enrty = DoubleCheck.getUserEntryYear(old, 2015)
+      new User(old.id, enrty)
+    }
   }
 }

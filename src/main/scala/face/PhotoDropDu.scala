@@ -50,14 +50,16 @@ object PhotoDropDu {
       )
     })
 
-    val copy2DiStr = "D:/work/photos-true/photos-repeat/%s".format(new File(source).getName)
-    val copy2Directory = new File(copy2DiStr)
-    if(!copy2Directory.exists()) copy2Directory.mkdirs()
-    println(copy2Directory.getAbsolutePath)
+    if (repeatPhotos.size > 0) {
+      val copy2DiStr = "D:/work/photos-true/photos-repeat/%s".format(new File(source).getName)
+      val copy2Directory = new File(copy2DiStr)
+      if (!copy2Directory.exists()) copy2Directory.mkdirs()
+      println(copy2Directory.getAbsolutePath)
 
-    println(repeatPhotos.size)
-    repeatPhotos.foreach(photo =>
-      new File(photo).renameTo(new File(copy2DiStr + "/%s".format(new File(photo).getName))))
+      println(repeatPhotos.size)
+      repeatPhotos.foreach(photo =>
+        new File(photo).renameTo(new File(copy2DiStr + "/%s".format(new File(photo).getName))))
+    }
   }
 
 

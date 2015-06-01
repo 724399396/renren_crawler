@@ -1,15 +1,21 @@
 import java.util.Calendar
 import java.net.URLEncoder._
 import scala.collection.mutable
+import scala.util.Random
 
 object DoubleCheck extends App {
 
   val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+  val tokens = CookieAndPostData.allTokens
+  val random = new Random()
 
-  println(getUserEntryYear(new User(0,"左雨",2002,"","","","",311046353),currentYear))
+  DBManager.allNotHaveEntryYearUsers().take(25).par.foreach(old => {
+    DBManager.fixUserEntryYear(new User(old.id, getUserEntryYear(old)))
+    println(old)
+  })
 
-  def getUserEntryYear(user: User, limitYear: Int): Int = {
-    val test = CookieAndPostData.allTokens.last
+  def getUserEntryYear(user: User, limitYear: Int = currentYear): Int = {
+    val test = tokens(random.nextInt(tokens.length))
     val testCookie = test(0)
     val testData = test(1)
 
@@ -67,7 +73,18 @@ object DoubleCheck extends App {
           encode("[{\"t\":\"univ\",\"year\":\"%d\"},{\"t\":\"birt\",\"year\":\"%d\"}]"
             .format(entryYear,birth), "UTF-8"), data("u"), offset)
       val doc = HtmlGetter.getHtmlByPost(url, cookie, data)
-      xml.XML.loadString(doc.toString)
+//      println(url)
+      try {
+        xml.XML.loadString(doc.toString)
+      } catch {
+        case _: org.xml.sax.SAXParseException =>
+//          println(doc.toString.
+//            replaceAll("""target="_blank">.*</a></strong>""", """target="_blank">"""+ name + "</a></strong>")
+//            .replaceAll("""data.name=[\w&#;]+""", "data.name=\"%s\"".format(name)))
+          xml.XML.loadString(doc.toString.
+            replaceAll("""target="_blank">.*</a></strong>""", """target="_blank">"""+ name + "</a></strong>")
+           .replaceAll("""name=.*" """, "name=\"%s\" ".format(name)))
+      }
     }
 
     checkThisYear(user.birth)

@@ -18,7 +18,7 @@ object FaceDetect {
 
   def main(args: Array[String]):Unit = {
     val t = System.currentTimeMillis()
-    (37 to 40).flatMap(age => Util.subFiles(new File("D:/work/photos-true/photos/%d".format(age)))).map(_.getAbsolutePath)
+    (15 to 40).flatMap(age => Util.subFiles(new File("D:/work/photos-true/photos/%d".format(age)))).map(_.getAbsolutePath)
       .filter(_.endsWith("jpg"))foreach(detectFaceAndWrite _)
     println("time: " + (System.currentTimeMillis - t) + "ms")
 //    Util.subFiles(new File("D:\\work\\photos-true\\other\\Images_ori")).toList.map(_.getAbsolutePath)

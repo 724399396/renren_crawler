@@ -21,7 +21,7 @@ object UserGetter extends App {
         getUserIdFromPage(url, cookie, tempData)
       }
     }
-      .filter(x => x._4 != null).map(x => new User(0,x._1, birth, where, x._2, x._3, x._4, x._5)).toList
+      .filter(x => x._4 != null).map(x => new User(0,x._1, birth, where, 0, x._2, x._3, x._4, x._5)).toList
   }
 
   def getUserIdFromPage(url: String, cookie: Map[String, String], data: Map[String, String]): mutable.Buffer[(String, String, String, String, Long)] = {

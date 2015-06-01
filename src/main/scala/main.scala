@@ -10,7 +10,8 @@ object Main extends App {
   //getUser(1985 to 2000, 490)
   //getUser(1999 to 2000, 490)
   //getPhoto(1973, 1975)
-  savePhoto(38,40)
+  //getPhoto(1998,2000)
+  savePhoto(15,40)
 
   import collection.mutable.Map
   sealed class Message
