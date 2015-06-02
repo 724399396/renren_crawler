@@ -14,7 +14,7 @@ class User(@BeanProperty val id: Int, @BeanProperty val nickName: String, @BeanP
     this(id, null,0,null,entryYear,null,null,null,0)
   }
 
-  override def toString = s"User($id, $nickName, $birth, $whereFrom, $entryYear, $home, $albumHome, $avatarAlbum, $uid)"
+  override def toString = s"User($id, $nickName, $birth, $whereFrom, $entryYear, $home)"
 }
 
 class Photo(@BeanProperty val id: Int, @BeanProperty val nickName: String, @BeanProperty val age: Int,
@@ -24,5 +24,5 @@ class Photo(@BeanProperty val id: Int, @BeanProperty val nickName: String, @Bean
     this(0,null,0,null,null,0)
   }
 
-  override def toString = s"Photo($id, $nickName, $age, $whereFrom, $avatarUrl, $hashId)"
+  override def toString = s"Photo($id, $nickName, $age, $avatarUrl)"
 }

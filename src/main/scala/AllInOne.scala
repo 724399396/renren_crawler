@@ -1,31 +1,26 @@
-import akka.actor.{ActorSystem, Props, Actor}
-import akka.routing.{RoundRobinRouter,SmallestMailboxRouter}
+import akka.actor.{Actor, ActorSystem, Props}
+import akka.routing.RoundRobinRouter
+import collection.mutable.Map
 
-/**
- * Created by li-wei on 2015/4/18.
- */
-object Main extends App {
+object AllInOne extends App {
   val tokens = CookieAndPostData.allTokens
-  //getUser(1973 to 2000, 0)
-  getUser(1970 to 1972, 490)
-  //getUser(1999 to 2000, 490)
-  //getPhoto(List(1973,1974,1975,1997,1998,1999,2000))
-  //getPhoto(1998,2000)
-  //savePhoto(15 to 40,10000)
+  autoDoneAll(1970 to 1973, 490, (1970 to 1973).toList, 15 to 40, 10000)
 
-  import collection.mutable.Map
+  case class AllMessage(birthList: Range, userNumLimit: Int,
+                        userList: List[Int], ageList: Range, photoLimit: Int)
+
   sealed class Message
+  case object FirstStep extends Message
   case class QueryCondition(birth: Int, limit: Int, cookie: Map[String, String], tempData: Map[String, String], where: String) extends Message
   case class UserMessage(user: User) extends Message
-  case class BirthAndLimit(birthList: Range, limit: Int) extends Message
-  case class QueryFinish(birth:Int, limit:Int) extends Message
+  case class QueryFinish(birth:Int, limit:Int, where: String) extends Message
 
-  case class WillFetchUser(userList: List[Int]) extends Message
+  case object SecondStep extends Message
   case class UserCondition(user: User) extends Message
   case class PhotoMessage(photo: Photo) extends Message
   case class UserFinish(user: User) extends Message
 
-  case class SavePhoto(ageList: Range, photoLimit: Int) extends Message
+  case object ThirdStep extends Message
   case class PhotoCondition(photo: Photo) extends Message
   case class PhotoFinish(photo: Photo) extends Message
 
@@ -34,7 +29,7 @@ object Main extends App {
       case QueryCondition(birth,limit,cookie,tempData, where) =>
         UserGetter.getUserByBirth(birth,limit,cookie,tempData, where).foreach(
           { user => DBManager.saveUser(user);sender ! UserMessage(user) })
-        sender ! QueryFinish(birth, limit)
+        sender ! QueryFinish(birth, limit, where)
       case UserCondition(user: User) =>
         PhotoGetter.getAvatarPhotoUrl(user.avatarAlbum).foreach(y => {
           val photo = new Photo(0,user.nickName, y._1 - user.birth, user.whereFrom, y._2.replaceAll("\\\\",""), y._2.replaceAll("\\\\","").hashCode)
@@ -52,22 +47,24 @@ object Main extends App {
     }
   }
 
-  class Master(nrWorker: Int) extends Actor {
+  class Master(nrWorker: Int, message: AllMessage) extends Actor {
+    val AllMessage(birthList, userNumLimit, userList, ageList, photoLimit) = message
     val worker = context.actorOf(Props[Crawler].withRouter(RoundRobinRouter(nrWorker)), "crawler")
     var taskSend, taskReceive = 0
     def receive() = {
-      case BirthAndLimit(birthList, limit) => birthList.foreach(birth =>
+      case FirstStep =>
+        birthList.foreach(birth =>
         tokens.foreach(token => {
           taskSend += 1
-          worker ! QueryCondition(birth, limit, token(0), token(1), token(2).keys.head)}))
+          worker ! QueryCondition(birth, userNumLimit, token(0), token(1), token(2).keys.head)}))
       case UserMessage(user) =>
         println(user)
-      case QueryFinish(birth, limit) =>
+      case QueryFinish(birth, limit, where) =>
         taskReceive += 1
-        printf("%s finish, %d / %d %n", birth, taskReceive, taskSend)
-        if (taskReceive == taskSend) { println("user get done!"); System.exit(0) }
+        printf("%s(%s) finish, %d / %d %n", birth, where, taskReceive, taskSend)
+        if (taskReceive == taskSend) { println("user get done!"); taskSend = 0; taskReceive = 0; self ! SecondStep }
 
-      case WillFetchUser(userList) => userList.flatMap(DBManager.notFetchUsersByBirth)
+      case SecondStep => userList.flatMap(DBManager.notFetchUsersByBirth)
         .foreach(user => {
           worker ! UserCondition(user)
           taskSend += 1
@@ -77,9 +74,9 @@ object Main extends App {
       case UserFinish(user) =>
         taskReceive += 1
         printf("%s is Finish, %d / %d %n", user.nickName, taskReceive, taskSend)
-        if (taskReceive == taskSend) { println("user fetch done!"); System.exit(0) }
+        if (taskReceive == taskSend) { println("user fetch done!"); taskSend = 0; taskReceive = 0; self ! ThirdStep }
 
-      case SavePhoto(ageList, photoLimit) => ageList.flatMap(age =>
+      case ThirdStep => ageList.flatMap(age =>
         DBManager.notSavePhotosByAge(age).take(photoLimit-DBManager.hasSavedPhotoNumByAge(age)))
         .foreach(photo => { worker ! PhotoCondition(photo); taskSend += 1})
       case PhotoFinish(photo) =>
@@ -89,22 +86,16 @@ object Main extends App {
     }
   }
 
-  def getUser(birthList: Range, limit: Int) = {
+
+
+  def autoDoneAll(birthList: Range, userNumLimit: Int,
+                  userList: List[Int], ageList: Range, photoLimit: Int): Unit = {
     val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(8)), name="master")
-    master ! BirthAndLimit(birthList, limit)
+    val master = system.actorOf(Props(new Master(10,
+      AllMessage(birthList, userNumLimit, userList, ageList, photoLimit))), name="master")
+    master ! FirstStep
   }
 
-  def getPhoto(userList: List[Int]) = {
-    val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(10)), name="master")
-    master ! WillFetchUser(userList)
-  }
 
-  def savePhoto(ageList: Range, photoLimit: Int) = {
-    val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(50)), name="master")
-    master ! SavePhoto(ageList, photoLimit)
-  }
 
 }
