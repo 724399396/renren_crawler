@@ -51,7 +51,7 @@ object PhotoSaver extends App {
         val conn: HttpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
         conn.setRequestMethod("GET");
         val inStream = conn.getInputStream()
-        if (inStream ==()) ()
+        if (inStream == null) ()
         else {
           val data: Array[Byte] = readInputStream(new BufferedInputStream(inStream.asInstanceOf[InputStream]))
           val outStream = new FileOutputStream(imageFile)

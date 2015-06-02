@@ -9,7 +9,7 @@ object DoubleCheck extends App {
   val tokens = CookieAndPostData.allTokens
   val random = new Random()
 
-  DBManager.allNotHaveEntryYearUsers().take(25).par.foreach(old => {
+  DBManager.allNotHaveEntryYearUsers().take(500).par.foreach(old => {
     DBManager.fixUserEntryYear(new User(old.id, getUserEntryYear(old)))
     println(old)
   })
@@ -78,12 +78,14 @@ object DoubleCheck extends App {
         xml.XML.loadString(doc.toString)
       } catch {
         case _: org.xml.sax.SAXParseException =>
-//          println(doc.toString.
-//            replaceAll("""target="_blank">.*</a></strong>""", """target="_blank">"""+ name + "</a></strong>")
-//            .replaceAll("""data.name=[\w&#;]+""", "data.name=\"%s\"".format(name)))
-          xml.XML.loadString(doc.toString.
-            replaceAll("""target="_blank">.*</a></strong>""", """target="_blank">"""+ name + "</a></strong>")
-           .replaceAll("""name=.*" """, "name=\"%s\" ".format(name)))
+//          println(doc.toString
+//            .replaceAll("""target="_blank">.*</a></strong>""", """target="_blank"></a></strong>""")
+//            .replaceAll("""name=.*" """, "name=\"\" ")
+//            .replaceAll("经历 : </span>[^<]+</dd>", "经历 : </span></dd>"))
+          xml.XML.loadString(doc.toString
+            .replaceAll("""target="_blank">.*</a></strong>""", """target="_blank"></a></strong>""")
+            .replaceAll("""name=.*" """, "name=\"\" ")
+            .replaceAll("经历 : </span>[^<]+</dd>", "经历 : </span></dd>"))
       }
     }
 
