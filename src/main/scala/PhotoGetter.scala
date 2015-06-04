@@ -26,7 +26,11 @@ object PhotoGetter {
       val photoListPattern = """'photoList':(\S+)""".r
       val urlPattern = """("url":")([^"]+)""".r
       val timePattern = """(\\"createTime\\":\\")([0-9]+)""".r
-      val photoList = photoListPattern.findFirstIn(page).get
+      val photoList = try {
+         photoListPattern.findFirstIn(page).get
+      } catch {
+        case ex: Exception => println("异常"); println(url); println(page); println(cookie); ex.printStackTrace(); System.exit(-1); ""
+      }
       val times = for (timePattern(_,time) <- timePattern.findAllIn(photoList)) yield time
       val urls = for (urlPattern(_, url) <- urlPattern.findAllIn(photoList)) yield url
       times.map(t => { val cal = Calendar.getInstance(); cal.setTime(new Date(t.toLong)); cal.getWeekYear}).zipAll(urls,2015, "")

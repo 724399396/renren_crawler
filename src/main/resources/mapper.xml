@@ -6,6 +6,10 @@
         VALUES(null,#{nickName},#{birth},#{whereFrom},#{entryYear},#{home},#{albumHome},#{avatarAlbum},#{uid},false)
     </insert>
 
+    <select id="allUidListCache" resultType="Long">
+        SELECT DISTINCT uid FROM users;
+    </select>
+
     <select id="isUserExist" parameterType="User" resultType="Int">
         SELECT id FROM users
         WHERE uid = #{uid}

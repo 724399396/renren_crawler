@@ -4,10 +4,10 @@ import collection.mutable.Map
 
 object AllInOne extends App {
   val tokens = CookieAndPostData.allTokens
-  autoDoneAll(1970 to 1973, 490, (1970 to 1973).toList, 15 to 40, 10000)
+  autoDoneAll(1970 to 2000, 0, (1970 to 1973).toSet ++ (1998 to 2000).toSet ++ (1970 to 2000).toSet, 15 to 40, 10000)
 
   case class AllMessage(birthList: Range, userNumLimit: Int,
-                        userList: List[Int], ageList: Range, photoLimit: Int)
+                        userList: Set[Int], ageList: Range, photoLimit: Int)
 
   sealed class Message
   case object FirstStep extends Message
@@ -89,9 +89,9 @@ object AllInOne extends App {
 
 
   def autoDoneAll(birthList: Range, userNumLimit: Int,
-                  userList: List[Int], ageList: Range, photoLimit: Int): Unit = {
+                  userList: Set[Int], ageList: Range, photoLimit: Int): Unit = {
     val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(10,
+    val master = system.actorOf(Props(new Master(3,
       AllMessage(birthList, userNumLimit, userList, ageList, photoLimit))), name="master")
     master ! FirstStep
   }

@@ -28,7 +28,8 @@ object DoubleCheck extends App {
         case resultNumRegex1(resultNum) => resultNum.toInt
         case resultNumRegex2(resultNum) => resultNum.toInt
       }
-      if (resultNum > 490) 490
+      //if (resultNum > 490) 490
+      if (resultNum > 10) 10
       else if(resultNum == 0) 0
       else (resultNum / 10 - (if (resultNum % 10 == 0) 1 else 0)) * 10
     }

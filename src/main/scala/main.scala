@@ -7,10 +7,10 @@ import akka.routing.{RoundRobinRouter,SmallestMailboxRouter}
 object Main extends App {
   val tokens = CookieAndPostData.allTokens
   //getUser(1973 to 2000, 0)
-  getUser(1970 to 1972, 490)
+  //getUser(1970 to 1972, 490)
   //getUser(1999 to 2000, 490)
   //getPhoto(List(1973,1974,1975,1997,1998,1999,2000))
-  //getPhoto(1998,2000)
+  getPhoto(1970 to 2000 toList)
   //savePhoto(15 to 40,10000)
 
   import collection.mutable.Map
@@ -91,13 +91,13 @@ object Main extends App {
 
   def getUser(birthList: Range, limit: Int) = {
     val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(8)), name="master")
+    val master = system.actorOf(Props(new Master(3)), name="master")
     master ! BirthAndLimit(birthList, limit)
   }
 
   def getPhoto(userList: List[Int]) = {
     val system = ActorSystem("ren-ren-actor")
-    val master = system.actorOf(Props(new Master(10)), name="master")
+    val master = system.actorOf(Props(new Master(6)), name="master")
     master ! WillFetchUser(userList)
   }
 

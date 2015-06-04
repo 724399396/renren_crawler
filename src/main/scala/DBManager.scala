@@ -13,12 +13,13 @@ object DBManager {
   val sessionFactory: SqlSessionFactory =
     new SqlSessionFactoryBuilder().build(reader)
 
+  val uidSet = allUidListCache()
 
   // save ren-ren user
   def saveUser(user: User): Unit = {
     val session: SqlSession = sessionFactory.openSession()
     try {
-      if(!isUserExist(user, session)) {
+      if(!isUserExistFromMem(user)) {
         val statement = "ren-ren_crawler.mapper.saveUser"
         session.insert(statement, user)
         session.commit()
@@ -29,11 +30,20 @@ object DBManager {
   }
 
   // check is user exist?
-  private def isUserExist(user: User, session: SqlSession): Boolean = {
+  private def isUserExistFromDB(user: User, session: SqlSession): Boolean = {
     val statement = "ren-ren_crawler.mapper.isUserExist"
     val exist = session.selectOne[Int](statement, user)
     session.commit()
     exist > 0
+  }
+
+  // check is user exist from memory
+  private def isUserExistFromMem(user: User): Boolean = {
+    if(uidSet contains user.uid) true
+    else {
+      uidSet add user.uid
+      false
+    }
   }
 
   def notFetchUsersByBirth(birth: Int) = {
@@ -186,12 +196,21 @@ object DBManager {
     }
   }
 
-  def main(args: Array[String]):Unit = {
-    fixUserEntryYear {
-      val old = allNotHaveEntryYearUsers()(2)
-      println(old)
-      val enrty = DoubleCheck.getUserEntryYear(old, 2015)
-      new User(old.id, enrty)
+  def allUidListCache(): mutable.Set[Long] = {
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.allUidListCache"
+      import scala.collection.JavaConversions.{asScalaBuffer, asJavaCollection, asScalaSet}
+      val uids: mutable.Buffer[Long] = session.selectList[Long](statement)
+      session.commit()
+      import java.util.concurrent.ConcurrentSkipListSet
+      new ConcurrentSkipListSet[Long](uids.toList)
+    } finally {
+      session.close()
     }
+  }
+
+  def main(args: Array[String]):Unit = {
+    println(allUidListCache().size)
   }
 }

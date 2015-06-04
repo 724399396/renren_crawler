@@ -1,6 +1,10 @@
 package face
 
 
+import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
+
 import org.opencv.core._
 import org.opencv.highgui.Highgui
 import org.opencv.imgproc.Imgproc
@@ -10,15 +14,28 @@ import org.opencv.imgproc.Imgproc
  */
 object Test extends App {
   System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
-  val img1 = Highgui.imread("1.jpg")
-  val img2 = Highgui.imread("D:\\work\\photos-true\\other\\Images_ori\\009055_0M54.JPG")
-  println(img1.dump().takeRight(1000))
-  println(img2.dump().takeRight(1000))
-  println(img1.dump().length)
-  println(img2.dump().length)
-  println(img1.copyTo(img2))
-  println(img2.dump.length)
-  println(img1.dump.length)
+//  println(Util.subFiles(new File("D:/work/photos-true/19")).map(_.getAbsolutePath).filter(_.endsWith(".jpg"))
+//    .map(Highgui.imread).minBy(_.size().width))
+//  var id = 1
+//  for (image <- Util.subFiles(new File("D:/work/photos-true/19")).map(_.getAbsolutePath).filter(_.endsWith(".jpg"))
+//  .map(Highgui.imread)){
+//    val resizeImage = new Mat()
+//    val sz: Size  = new Size(300,300)
+//    Imgproc.resize( image, resizeImage, sz )
+//    Highgui.imwrite("D:/work/photos-true/19-resize/%d.jpg".format(id), resizeImage)
+//    id += 1
+//  }
+
+//  for(file <- Util.subFiles(new File("D:/work/photos-true/19-resize")).map(_.getAbsolutePath).filter(_.endsWith(".jpg"))) {
+//    val old = Highgui.imread(file)
+//    val resizeImage = new Mat()
+//    val sz: Size  = new Size(161,143)
+//    Imgproc.resize( old, resizeImage, sz )
+//    Highgui.imwrite(file, resizeImage)
+//  }
+
+
+
 //  val hash = pHash("D:\\work\\photos-true\\faces\\20\\100047-0.jpg")
 //  val hash2 = pHash("D:\\work\\photos-true\\faces\\20\\100047-1.jpg")
 //  println(hash.zip(hash2).map({ case (x, y) => if (x != y) 1 else 0 }).sum)
