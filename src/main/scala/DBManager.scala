@@ -211,6 +211,6 @@ object DBManager {
   }
 
   def main(args: Array[String]):Unit = {
-    println(allUidListCache().size)
+    println(getPhotoById(1416))
   }
 }
