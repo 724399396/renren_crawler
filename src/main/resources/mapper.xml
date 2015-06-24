@@ -68,4 +68,26 @@
         WHERE id = #{id}
     </update>
 
+    <insert id="saveFace" parameterType="Face">
+        INSERT INTO faces
+        VALUES(#{id},#{nickname},#{age},#{sex},#{width},#{height})
+    </insert>
+
+    <select id="isFaceExist" parameterType="Face" resultType="String">
+        SELECT id FROM faces
+        WHERE id = #{id}
+    </select>
+
+    <select id="photoForFace" parameterType="Int" resultType="String">
+        SELECT nickName FROM photos
+        WHERE id=#{id}
+    </select>
+
+    <select id="fix" resultType="Int">
+        SELECT id FROM photos WHERE isFetch=TRUE
+    </select>
+
+    <delete id="delete" parameterType="Int">
+        DELETE FROM photos WHERE id = #{id}
+    </delete>
 </mapper>

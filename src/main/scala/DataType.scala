@@ -26,3 +26,7 @@ class Photo(@BeanProperty val id: Int, @BeanProperty val nickName: String, @Bean
 
   override def toString = s"Photo($id, $nickName, $age, $avatarUrl)"
 }
+
+case class Face(@BeanProperty val id: String, @BeanProperty val nickname: String, @BeanProperty val age: Int,
+            @BeanProperty val sex: Int, @BeanProperty width: Int, @BeanProperty height: Int)
+

@@ -1,3 +1,6 @@
+import java.io.File
+import java.util.Scanner
+
 import org.apache.ibatis.io.Resources
 import org.apache.ibatis.session.{SqlSession, SqlSessionFactoryBuilder, SqlSessionFactory}
 
@@ -210,7 +213,88 @@ object DBManager {
     }
   }
 
+  def saveFace(face: Face): Unit = {
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      if(!isFaceExistFromDB(face,session)) {
+        val statement = "ren-ren_crawler.mapper.saveFace"
+        session.insert(statement, face)
+        session.commit()
+      }
+    } finally {
+      session.close()
+    }
+  }
+
+  private def isFaceExistFromDB(face: Face, session: SqlSession): Boolean = {
+    val statement = "ren-ren_crawler.mapper.isFaceExist"
+    val exist = session.selectOne[String](statement, face)
+    session.commit()
+    exist != null
+  }
+
+  def photoForFace(id: Int): String = {
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.photoForFace"
+      val name = session.selectOne[String](statement, id)
+      session.commit()
+      name
+    } finally {
+      session.close()
+    }
+  }
+
+  def fix(): List[Int] = {
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.fix"
+      import scala.collection.JavaConversions.asScalaBuffer
+      val names:mutable.Buffer[Int] = session.selectList[Int](statement)
+      session.commit()
+      names.toList
+    } finally {
+      session.close()
+    }
+  }
+
+  def delete(id: Int) = {
+    val session: SqlSession = sessionFactory.openSession()
+    try {
+      val statement = "ren-ren_crawler.mapper.delete"
+      session.delete(statement, id)
+      session.commit()
+    } finally {
+      session.close()
+    }
+  }
+
   def main(args: Array[String]):Unit = {
-    println(getPhotoById(1416))
+    val localFile = face.Util.subFiles(new File("D:/work/photos-true/first/photos")).toList ++
+      face.Util.subFiles(new File("D:/work/photos-true/first/photos-repeat")).toList
+    val faceFile = face.Util.subFiles(new File("D:/work/photos-true/first/faces")).toList ++
+      face.Util.subFiles(new File("D:/work/photos-true/first/faces-repeat")).toList
+    val totalFile = face.Util.subFiles(new File("D:/work/photos-true/total")).toList
+    val downs =
+      localFile.map(_.getName).filter(_.endsWith(".jpg")).map(_.takeWhile(_ != '.').toInt).toSet ++
+      totalFile.map(_.getName).filter(_.endsWith(".jpg")).map(_.takeWhile(_ != '-').toInt).toSet ++
+      faceFile.map(_.getName).filter(_.endsWith(".jpg")).map(_.takeWhile(_ != '-').toInt).toSet
+    val different = fix().toSet diff downs
+    println(different)
+
+    val wilDelP = localFile.filter(_.getName.endsWith(".jpg")).filter(fileName => different.contains(fileName.getName.takeWhile(_ != '.').toInt))
+    val wilDelF = faceFile.filter(_.getName.endsWith(".jpg")).filter(fileName => different.contains(fileName.getName.takeWhile(_ != '-').toInt))
+    val wilDelT = totalFile.filter(_.getName.endsWith(".jpg")).filter(fileName => different.contains(fileName.getName.takeWhile(_ != '-').toInt))
+    println(wilDelP)
+    println(wilDelF)
+    println(wilDelT)
+
+    val sc: Scanner = new Scanner(System.in)
+    if (sc.hasNext) {
+      different.foreach(delete)
+      wilDelP.foreach(_.delete)
+      wilDelF.foreach(_.delete)
+      wilDelT.foreach(_.delete)
+    }
   }
 }

@@ -11,9 +11,6 @@ import com.sun.image.codec.jpeg.{JPEGCodec, JPEGImageEncoder}
  */
 object ImageMerge extends App {
 
-//  Util.subFiles(new File("D:/work/photos-true/19-resize-2")).map(_.getAbsolutePath).filter(_.endsWith(".jpg"))
-//  .foreach(f => resize(f, 100, 100, f))
-  // 5 8 161 143
   merge("D:/work/photos-true/wall/19/nan", 5, 9, "D:/work/photos-true/wall/19/result/nan.jpg")
 
   def merge(imageDir: String, row: Int, col: Int, outFile: String):Unit = {

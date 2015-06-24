@@ -4,7 +4,7 @@ import collection.mutable.Map
 
 object AllInOne extends App {
   val tokens = CookieAndPostData.allTokens
-  autoDoneAll(1970 to 2000, 0, (1970 to 1973).toSet ++ (1998 to 2000).toSet ++ (1970 to 2000).toSet, 15 to 40, 10000)
+  autoDoneAll(1940 to 1975, 0, (1940 to 1975).toSet, 40 to 75, 10000)
 
   case class AllMessage(birthList: Range, userNumLimit: Int,
                         userList: Set[Int], ageList: Range, photoLimit: Int)

@@ -10,30 +10,30 @@ import org.opencv.objdetect.CascadeClassifier
  * vm args: -Djava.library.path=F:/opencv/build/java/x64;F:/opencv/build/x64/vc12/bin -Xms100M -Xmx300M -XX:MaxPermSize=50M -XX:MaxDirectMemorySize=50M
  */
 object FaceDetect {
-  System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
-  //val faceDetector: CascadeClassifier = new CascadeClassifier("F:\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_default.xml")
+  System.loadLibrary(Core.NATIVE_LIBRARY_NAME) /* load opencv library */
+  /* choose one classifier */
   val faceDetector: CascadeClassifier = new CascadeClassifier("F:\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml")
-  //val faceDetector: CascadeClassifier = new CascadeClassifier("F:\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_alt2.xml")
-  //val faceDetector: CascadeClassifier = new CascadeClassifier("F:\\opencv\\sources\\data\\haarcascades\\haarcascade_frontalface_alt_tree.xml")
+  // the photo base dir
+  val baseDir = "D:/work/photos-true"
 
   def main(args: Array[String]):Unit = {
-    val t = System.currentTimeMillis()
-    (15 to 40).flatMap(age => Util.subFiles(new File("D:/work/photos-true/photos/%d".format(age)))).map(_.getAbsolutePath)
-      .filter(_.endsWith("jpg"))foreach(detectFaceAndWrite _)
-    println("time: " + (System.currentTimeMillis - t) + "ms")
-//    Util.subFiles(new File("D:\\work\\photos-true\\other\\Images_ori")).toList.map(_.getAbsolutePath)
-//    .filter(_.toLowerCase().endsWith("jpg")).foreach(detectFaceAndWrite _)
-    //detectFaceAndWrite("D:\\work\\photos-true\\other\\Images_ori\\009055_0M54.JPG")
+    val t = System.currentTimeMillis()  // start time
+    (61 to 75).flatMap(age =>  // process every age
+      Util.subFiles(new File("%s/photos/%d".format(baseDir,age)))) // get every img file
+      .map(_.getAbsolutePath) // get file absolute path
+      .filter(_.endsWith("jpg")) // only process jpg file
+      .foreach(detectFaceAndWrite _) // detect face and save
+    println("time: " + (System.currentTimeMillis - t) + "ms")   // print spend time
   }
 
   def detectFaceAndWrite(source: String): Unit = {
     try {
-      println(source)
+      println(source) // print for watch
       val sourceFile = new File(source)
-      val image: Mat = Highgui.imread(source)
-      val faceDetections: MatOfRect = new MatOfRect()
-      faceDetector.detectMultiScale(image, faceDetections)
-      if(faceDetections.toArray.length > 0) {
+      val image: Mat = Highgui.imread(source) // read image
+      val faceDetections: MatOfRect = new MatOfRect() // create rect images to save face that detect
+      faceDetector.detectMultiScale(image, faceDetections) // detect face
+      if(faceDetections.toArray.length > 0) {   // if detected
         var i = 0
         for (rect <- faceDetections.toArray) {
           val filename = "D:/work/photos-true/faces/%s/%s-%d.jpg".format(sourceFile.getParentFile.getName,

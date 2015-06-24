@@ -11,7 +11,7 @@ import org.opencv.imgproc.Imgproc
  */
 object FaceDropDu {
   def main(args: Array[String]): Unit = {
-    (15 to 40).foreach(age => deleteRepeatPhoto("D:/work/photos-true/faces/%d".format(age)))
+    (41 to 75).foreach(age => deleteRepeatPhoto("D:/work/photos-true/faces/%d".format(age)))
   }
 
   private def deleteRepeatPhoto(source: String) {
@@ -21,10 +21,6 @@ object FaceDropDu {
     val allPhotoFiles = Util.subFiles(new File(source)).toList
     val allPhotos = allPhotoFiles.map(_.getAbsolutePath).filter(_.endsWith(".jpg"))
     val allHashs = allPhotos.map(photo => (photo -> Util.pHash(photo))).toMap
-//    val out = new ObjectOutputStream(new FileOutputStream("face-hash.back"))
-//    out.writeObject(allHashs)
-//    val in = new ObjectInputStream(new FileInputStream("face-hash.back"))
-//    val allHashs = in.readObject().asInstanceOf[Map[String,IndexedSeq[Int]]]
     allPhotos.foreach(one => {
       allPhotos.filter(other => jpgIndex2Number(other) > jpgIndex2Number(one)).foreach(
         other => {

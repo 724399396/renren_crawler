@@ -11,8 +11,7 @@ import org.opencv.imgproc.Imgproc
  */
 object PhotoDropDu {
   def main(args: Array[String]): Unit = {
-    (6 to 40).foreach(age => deleteRepeatPhoto("D:/work/photos-true/photos/%d".format(age)))
-    //deleteRepeatPhoto("D:/work/photos-true/photos/20")
+    (41 to 75).foreach(age => deleteRepeatPhoto("D:/work/photos-true/photos/%d".format(age)))
   }
 
   private def copyPhoto2Tmp(directory: String) {
@@ -34,10 +33,6 @@ object PhotoDropDu {
     val allPhotoFiles = Util.subFiles(new File(source)).toList
     val allPhotos = allPhotoFiles.map(_.getAbsolutePath).filter(_.endsWith(".jpg"))
     val allHashs = allPhotos.map(photo => (photo -> Util.pHash(photo))).toMap
-//    val out = new ObjectOutputStream(new FileOutputStream("hash.back"))
-//    out.writeObject(allHashs)
-//    val in = new ObjectInputStream(new FileInputStream("hash.back"))
-//    val allHashs = in.readObject().asInstanceOf[Map[String,IndexedSeq[Int]]]
     allPhotos.foreach(one => {
       allPhotos.filter(other => jpgIndex2Number(other) > jpgIndex2Number(one)).foreach(
         other => {
@@ -69,51 +64,3 @@ object PhotoDropDu {
     full.substring(0, full.lastIndexOf(".jpg")).toInt
   }
 }
-
-
-//try {
-//val source = new File(mainPhoto)
-//val parent = source.getParentFile
-//
-//val channel = new MatOfInt(2)
-//val mMaskMat = new Mat()
-//val mHistMat = new Mat()
-//val histSize = new MatOfInt(256)
-//val range = new MatOfFloat(0f, 256f)
-//
-//val image: Mat = Highgui.imread(Util.convertReal2Tmp(source))
-//Imgproc.calcHist(java.util.Arrays.asList(image), channel, mMaskMat, mHistMat, histSize, range)
-//Core.normalize(mHistMat, mHistMat, image.height / 2, 0, Core.NORM_INF)
-//
-//for (photo <- Util.subFiles(parent).filter(_.getName.compareTo(source.getName) > 0)
-//.map(_.getAbsolutePath)) {
-//try {
-//val image2: Mat = Highgui.imread(Util.convertReal2Tmp(new File(photo)))
-//val mHistMat2 = new Mat()
-//val mMaskMat2 = new Mat()
-//
-//Imgproc.calcHist(java.util.Arrays.asList(image2), channel, mMaskMat2, mHistMat2, histSize, range)
-//Core.normalize(mHistMat2, mHistMat2, image2.height / 2, 0, Core.NORM_INF)
-//val distance = Imgproc.compareHist(mHistMat, mHistMat2, Imgproc.CV_COMP_BHATTACHARYYA)
-////13,062
-//if (distance == 0.0) {
-//println(mainPhoto + "->" + photo + " : " + distance)
-//// 按顺序，删除的是外层文件，就能避免多次删除和比较问题
-//// 最好在这里加入 java 里的break
-//println(mainPhoto)
-//repeatPhotos.add(mainPhoto)
-//}
-//image2.release()
-//mHistMat2.release()
-//} catch {
-//case _ =>  println("error occur:" + photo); new File(photo).delete()
-//}
-//}
-//count += 1
-//println("%d/%d".format(count, allPhotos.size))
-//image.release()
-//mMaskMat.release()
-//mHistMat.release()
-//} catch {
-//case _ => println("error occur:" + mainPhoto); new File(mainPhoto).delete()
-//}
