@@ -10,20 +10,10 @@ import org.opencv.imgproc.Imgproc
  * vm args: -Djava.library.path=F:/opencv/build/java/x64;F:/opencv/build/x64/vc12/bin
  */
 object PhotoDropDu {
+  // same as FaceDropDu
   def main(args: Array[String]): Unit = {
-    (41 to 75).foreach(age => deleteRepeatPhoto("D:/work/photos-true/photos/%d".format(age)))
-  }
-
-  private def copyPhoto2Tmp(directory: String) {
-    val photoFiles = Util.subFiles(new File(directory)).toList
-    val allPhotos = photoFiles.map(_.getAbsolutePath).filter(_.endsWith(".jpg")).toArray
-    val size = allPhotos.size
-    for (i <- 0 until size) {
-      val srcPhoto = allPhotos(i)
-      val desPhoto = Util.convertReal2Tmp(new File(srcPhoto))
-      printf("%d/%d\r\n", i + 1, size)
-      Util.copyFile(srcPhoto, desPhoto)
-    }
+    (args(0).toInt to args(1).toInt)
+      .foreach(age => deleteRepeatPhoto("%s/photos/%d".format(Main.baseDir, age)))
   }
 
   private def deleteRepeatPhoto(source: String) {
