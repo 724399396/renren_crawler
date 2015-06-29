@@ -6,9 +6,6 @@ import org.opencv.core.{Core, CvType, Size, Mat}
 import org.opencv.highgui.Highgui
 import org.opencv.imgproc.Imgproc
 
-/**
- * Created by li-wei on 2015/5/1.
- */
 object Util {
   def copyFile(source: String, desc: String): Unit = {
     val in = new FileInputStream(source)
@@ -38,15 +35,10 @@ object Util {
       val all = dir.listFiles()
       val files = all.filter(_.isFile)
       val dirs = all.filter(_.isDirectory)
-      files.toIterator ++ dirs.toIterator.flatMap(subFiles _)
+      files.toIterator ++ dirs.toIterator.flatMap(subFiles)
     } else {
       Iterator()
     }
-  }
-
-  def convertReal2Tmp(source: File): String = {
-    "D:/work/photos-true/tmp/%s/%s"
-      .format(source.getParentFile.getParentFile.getName,source.getName)
   }
 
   def pHash(photo: String): IndexedSeq[Int] = {
@@ -60,7 +52,7 @@ object Util {
       image.assignTo(image, CvType.CV_64FC1)
       Core.dct(image, image)
       val pixels = (0 until 8).flatMap(row => (0 until 8).map(col => (row, col)))
-        .map { case (row, col) => image.get(row, col) }.flatten
+        .flatMap { case (row, col) => image.get(row, col) }
       val mean = pixels.sum / pixels.size
       val hash = pixels.map(value => if (value >= mean) 1 else 0)
       image.release()
@@ -79,7 +71,7 @@ object Util {
       Imgproc.resize(one, image, dSize)
       Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY)
       val points = (0 until 8).flatMap(row => (0 until 8).map(col => (row, col)))
-      val pixels = points.map { case (row, col) => image.get(row, col) }.flatten.map(_ / 4)
+      val pixels = points.flatMap { case (row, col) => image.get(row, col) }.map(_ / 4)
       val mean = pixels.sum / pixels.size
       val hash = pixels.map(value => if (value >= mean) 1 else 0)
       one.release()
@@ -87,7 +79,7 @@ object Util {
       hash
       //hash.zip(hash2).map({ case (x, y) => if (x != y) 1 else 0 }).sum
     } catch {
-      case _: Throwable => println("失效图片: " + photo ); new File(photo).delete(); (0 until 64).map(_ => 2)
+      case t: Throwable => println("失效图片: " + photo ); /*new File(photo).delete();*/ (0 until 64).map(_ => 2)
     }
   }
 }

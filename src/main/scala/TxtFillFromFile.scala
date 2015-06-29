@@ -12,12 +12,12 @@ object TxtFillFromFile extends App {
     val files = face.Util.subFiles(new File("D:/work/photos-true/total/%d".format(age))).filter(_.getName.endsWith(".jpg")).toList
     val out = new PrintWriter("D:/work/photos-true/message-generator/txt-complete/%d.txt".format(age))
     files.map(file => (file.getName.takeWhile(_ != '.'), file.getParentFile.getName.toList.mkString(" ")))
-      .map { case (id, message) => id + nonMessage(id) + " " + message }
+      .filter({case (id, _) => nonMessage.isDefinedAt(id)})
+      .map { case (id, message) =>  id + nonMessage(id) + " " + message}
       .foreach(out.println)
     out.close
-    println(nonMessage.size)
     nonMessage.keySet.diff(files.map(_.getName.takeWhile(_ != '.')).toSet).foreach(println)
     println("%d is done".format(age))
   }
-  (15 to 75).foreach(fill)
+  (23 to 40).foreach(fill)
 }

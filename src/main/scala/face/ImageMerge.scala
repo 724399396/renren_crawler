@@ -7,7 +7,7 @@ import javax.imageio.ImageIO
 import com.sun.image.codec.jpeg.{JPEGCodec, JPEGImageEncoder}
 
 /**
- * Created by li-wei on 2015/6/4.
+ * Merge photo with set row and column
  */
 object ImageMerge extends App {
 
@@ -34,7 +34,7 @@ object ImageMerge extends App {
   def resize(file: File, width: Int, height: Int): File = {
     val image = ImageIO.read(file)
     val tag: BufferedImage = new BufferedImage(width, height,BufferedImage.TYPE_INT_RGB)
-    tag.getGraphics().drawImage(image, 0, 0, width, height, null)
+    tag.getGraphics.drawImage(image, 0, 0, width, height, null)
     val out = new File(file.getParentFile.getParent + "/" + file.getParentFile.getName + "-resize" + "/" + file.getName)
     if (!out.getParentFile.exists()) out.getParentFile.mkdirs()
     println(out)
