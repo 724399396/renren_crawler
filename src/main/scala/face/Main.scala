@@ -7,8 +7,8 @@ import org.opencv.core.Core
  */
 object Main extends App{
   System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
-  val lowAge = "15"
-  val uppAge = "17"
+  val lowAge = "6"
+  val uppAge = "6"
   val baseDir = "D:/work/photos-true/first"
   PhotoDropDu.main(Array(lowAge, uppAge))
   FaceDetect.main(Array(lowAge, uppAge))

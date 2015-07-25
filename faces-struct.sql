@@ -7,5 +7,5 @@ CREATE TABLE `faces`(
 `sex` int(1) NOT NULL,
 `width` int(4),
 `height` int(4)
-)
+);
 CREATE UNIQUE INDEX id_unique ON renren.faces(id);

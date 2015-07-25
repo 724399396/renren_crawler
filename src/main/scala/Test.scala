@@ -2,7 +2,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 /**
- * Created by li-wei on 2015/6/29.
+ * Created by liwei on 2015/7/5.
  */
 object Test extends App {
   val readers = ImageIO.getImageReadersByFormatName("jpg")

@@ -51,7 +51,6 @@ object Login extends App {
     }).filterNot(x => {(if(x.startsWith(" t")) {isRealT = !isRealT; isRealT} else false)})
   }
 
-
   def getData(cookie: Map[String,String]): Array[String] = {
     import org.jsoup.Jsoup
     import scala.collection.JavaConversions._
