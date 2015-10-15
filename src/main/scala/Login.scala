@@ -11,9 +11,8 @@ import scala.io.Source
  * Created by li-wei on 2015/4/15.
  */
 object Login extends App {
-  val resourcePath = Login.getClass().getResource("/").getPath
-  val source = Source.fromFile(new File(resourcePath + "id&pwd.properties"))
-  val out = new PrintWriter(new File(resourcePath + "cookie&data.properties"))
+  val source = Source.fromFile(new File("id&pwd.properties"))
+  val out = new PrintWriter(new File("cookie&data.properties"))
   val cookies = source.getLines().map(line => {
     val np = line.split("----")
     write2File(loginAndGetCookie(np(0), np(1)), np(2))

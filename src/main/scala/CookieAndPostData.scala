@@ -5,8 +5,7 @@ import scala.io.Source
  * Created by li-wei on 2015/4/15.
  */
 object CookieAndPostData {
-  val resourcePath = Login.getClass().getResource("/").getPath
-  val allTokens = readFromFile(resourcePath + "cookie&data.properties")
+  val allTokens = readFromFile("cookie&data.properties")
   private def readFromFile(fileName: String): Array[Array[collection.mutable.Map[String,String]]] = {
     val source = Source.fromFile(new File(fileName))
     source.getLines().map(line => {
